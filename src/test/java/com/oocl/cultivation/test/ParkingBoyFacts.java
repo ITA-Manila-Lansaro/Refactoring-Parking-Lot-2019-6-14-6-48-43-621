@@ -124,10 +124,22 @@ class ParkingBoyFacts {
     }
 
     @Test
+    void should_return_car_when_super_parking_boy_fetch_car_from_parking_lot() {
+        Car car = new Car();
+        ParkingLot parkingLot = new ParkingLot();
+        SuperSmartParkingBoy superParkingBoy = new SuperSmartParkingBoy(parkingLot);
+
+        ParkingTicket parkingTicket = superParkingBoy.park(car);
+
+        assertEquals(car, superParkingBoy.fetch(parkingTicket));
+    }
+
+    @Test
     void should_super_smart_parking_boy_park_to_parking_lot_with_larger_capacity(){
 
         ParkingLot parkingLot = new ParkingLot();
         ParkingLot parkingLot2 = new ParkingLot();
+//        SuperSmartParkingBoy parkingBoy = new SuperSmartParkingBoy(parkingLot);
         SuperSmartParkingBoy parkingBoy = new SuperSmartParkingBoy(parkingLot, parkingLot2);
 
         IntStream.rangeClosed(0 , 9).forEach( a ->
@@ -138,15 +150,4 @@ class ParkingBoyFacts {
         assertEquals(parkingBoy.getParkingLot2().getCars().size() , 5);
     }
 
-
-    @Test
-    void should_return_car_when_super_parking_boy_fetch_car_from_parking_lot() {
-        Car car = new Car();
-        ParkingLot parkingLot = new ParkingLot();
-        SuperSmartParkingBoy superParkingBoy = new SuperSmartParkingBoy(parkingLot);
-
-        ParkingTicket parkingTicket = superParkingBoy.park(car);
-
-        assertEquals(car, superParkingBoy.fetch(parkingTicket));
-    }
 }
