@@ -1,13 +1,13 @@
 package com.oocl.cultivation;
 
-import java.util.Map;
-
 public class ParkingBoy {
 
+    public static final String NOT_ENOUGH_POSITION_ERR_MSG = "Not enough position.";
+    public static final String NO_TICKET_ERR_MSG = "Please Provide your Parking ticket";
+    public static final String UNRECOGNIZED_TICKET_ERR_MSG = "Unrecognized parking ticket.";
     private final ParkingLot parkingLot;
     private ParkingLot parkingLot2;
     private String lastErrorMessage;
-    private Car car;
 
     public ParkingLot getParkingLot2() {
         return parkingLot2;
@@ -26,12 +26,17 @@ public class ParkingBoy {
     public ParkingTicket park(Car car) {
         ParkingTicket parkingTicket = parkingLot.parkCar(car);
 
-        if(parkingTicket == null){
-            setLastErrorMessage("Not enough position.");
-            parkToAnotherParkingLot(car);
-        }
+        parkToAnotherParkingLotIfParkingIsFull(car, parkingTicket);
+
         return parkingTicket;
 
+    }
+
+    private void parkToAnotherParkingLotIfParkingIsFull(Car car, ParkingTicket parkingTicket) {
+        if(parkingTicket == null){
+            setLastErrorMessage(NOT_ENOUGH_POSITION_ERR_MSG);
+            parkToAnotherParkingLot(car);
+        }
     }
 
     public ParkingTicket parkToAnotherParkingLot(Car car){
@@ -45,14 +50,14 @@ public class ParkingBoy {
         Car fetchedCar = parkingLot.getCar(ticket);
 
         if (fetchedCar==null){
-            setLastErrorMessage("Unrecognized parking ticket.");
+            setLastErrorMessage(UNRECOGNIZED_TICKET_ERR_MSG);
             return null;
         }
         return fetchedCar;
     }
 
     public void fetch(){
-        setLastErrorMessage("Please Provide your Parking ticket");
+        setLastErrorMessage(NO_TICKET_ERR_MSG);
     }
 
     public String getLastErrorMessage() {
