@@ -1,80 +1,58 @@
 package com.oocl.cultivation;
 
+import java.util.List;
+import java.util.Objects;
+
 public class ParkingBoy {
 
     public static final String NOT_ENOUGH_POSITION_ERR_MSG = "Not enough position.";
     public static final String NO_TICKET_ERR_MSG = "Please Provide your Parking ticket";
     public static final String UNRECOGNIZED_TICKET_ERR_MSG = "Unrecognized parking ticket.";
+    public List<ParkingLot> parkingLotList;
 
-    public ParkingLot parkingLot;
-    public ParkingLot parkingLot2;
-
-    public ParkingLot getParkingLot() {
-        return parkingLot;
+    public List<ParkingLot> getParkingLot() {
+        return parkingLotList;
     }
     private String lastErrorMessage;
-
-    public ParkingLot getParkingLot2() {
-        return parkingLot2;
-    }
 
     public void setLastErrorMessage(String lastErrorMessage) {
         this.lastErrorMessage = lastErrorMessage;
     }
 
-
-
-    public ParkingBoy(ParkingLot parkingLot) {
-        this.parkingLot = parkingLot;
-    }
-    public ParkingBoy(ParkingLot parkingLot, ParkingLot parkingLot2) {
-        this.parkingLot = parkingLot;
-        this.parkingLot2 = parkingLot2;
+    public ParkingBoy(List<ParkingLot> parkingLot) {
+        this.parkingLotList = parkingLot;
     }
 
     public ParkingTicket park(Car car) {
-        ParkingTicket parkingTicket = parkingLot.parkCar(car);
 
-        parkToAnotherParkingLotIfParkingIsFull(car, parkingTicket);
-
-        return parkingTicket;
-
-    }
-
-    private void parkToAnotherParkingLotIfParkingIsFull(Car car, ParkingTicket parkingTicket) {
-        if(parkingTicket == null){
-            setLastErrorMessage(NOT_ENOUGH_POSITION_ERR_MSG);
-            parkToAnotherParkingLot(car);
+        ParkingLot parkingLot =  parkingLotList.stream()
+                .filter(a -> a.getAvailableParkingPosition() < 0)
+                .findFirst()
+                .orElse(null);
+        if(parkingLot != null)
+        {
+            return parkingLot.parkCar(car);
         }
+        setLastErrorMessage(NOT_ENOUGH_POSITION_ERR_MSG);
+
+        return null;
+
     }
 
-    public ParkingTicket parkToAnotherParkingLot(Car car){
-        ParkingLot parkingLot = new ParkingLot();
-        this.parkingLot2 = parkingLot;
-
-        return parkingLot2.parkCar(car);
-    }
     public Car fetch(ParkingTicket ticket) {
-        Car fetchedCar = parkingLot.getCar(ticket);
+        Car fetchedCar;
 
-        if (parkingLot2 != null){
-            fetchedCar = parkingLot.getCar(ticket);
-            fetchedCar = fetchedCar != null ? fetchedCar : parkingLot2.getCar(ticket);
+        fetchedCar = parkingLotList.stream()
+                .map(a -> a.getCar(ticket))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
+
+        if(fetchedCar == null){
+            setLastErrorMessage(UNRECOGNIZED_TICKET_ERR_MSG);
         }
-
-        if (hasFetchedCar(fetchedCar)) return null;
-
         return fetchedCar;
     }
-
-    private boolean hasFetchedCar(Car fetchedCar) {
-        if (fetchedCar==null){
-            setLastErrorMessage(UNRECOGNIZED_TICKET_ERR_MSG);
-            return true;
-        }
-        return false;
-    }
-
 
     public void fetch(){
         setLastErrorMessage(NO_TICKET_ERR_MSG);

@@ -3,8 +3,9 @@ package com.oocl.cultivation;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ParkingLot {
+public class ParkingLot{
     private final int capacity;
+    ParkingBoy parkingBoy;
 
     public Map<ParkingTicket, Car> getCars() {
         return cars;
@@ -12,16 +13,22 @@ public class ParkingLot {
 
     public Car getCar(ParkingTicket ticket){
         Car fetchedCar = cars.get(ticket);
-        cars.remove(ticket);
-        return fetchedCar;
+
+        if(fetchedCar != null){
+            cars.remove(ticket);
+            return fetchedCar;
+        }
+
+        return null;
     }
 
     public ParkingTicket parkCar(Car car) {
         if(getAvailableParkingPosition() < 0){
-            ParkingTicket parkingTicket = new ParkingTicket(car);
+            ParkingTicket parkingTicket = new ParkingTicket();
             this.cars.put(parkingTicket,car);
             return parkingTicket;
         }
+        parkingBoy.setLastErrorMessage(parkingBoy.NOT_ENOUGH_POSITION_ERR_MSG);
         return null;
     }
 
